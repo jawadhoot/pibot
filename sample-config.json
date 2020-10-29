@@ -1,0 +1,7 @@
+{
+    "xmpp":{
+        "sender-jid":"",
+        "sender-pass":"",
+        "recipient-jid": ""
+    }
+}
