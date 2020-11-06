@@ -22,7 +22,7 @@ def extractor():
 		summary = match.find('span', class_ = 'cbz-ui-home').text
 		
 		result['tournament'] = matchheader[1]
-		result['tornament_match'] = matchheader[0]
+		result['tournament_match'] = matchheader[0]
 		result['teams'] = [team1['team'],team2['team']]
 		result['scores'] = [team1,team2] 
 		result['summary'] = summary
@@ -30,11 +30,28 @@ def extractor():
 		scores.append(result)
 	return scores
 
-def filter():
-	pass
+def filter_matches(filters_array, matches):
+	a = matches
+	for filter_str in filters_array:
+		a = apply_filter(filter_str, a)
+	return a
 
-def xmpp_transform():
-	pass
+def apply_filter(string, matches):
+	tokens = string.split(';')
+	print(tokens)
+	if tokens[0] == "tournament":
+		return list(filter(lambda a: tokens[1] in a['tournament'], matches))
+
+def get_string(match_dict):
+	str_arr = []
+	str_arr.append(match_dict["tournament"] + ', ' + match_dict["tournament_match"])
+	for score in match_dict['scores']:
+		if "runs" in score:
+			str_arr.append(score['team'] + ' ' + score['runs'] + '/' + score['wickets'] + '(' + score['overs'] + ')')
+		else:
+			str_arr.append(score['team'])
+	str_arr.append(match_dict['summary'])
+	return '\n'.join(str_arr)
 
 def parse_score(string):
 	print(string)
@@ -51,6 +68,11 @@ def parse_score(string):
 	return score
 
 if __name__ == "__main__":
-	print(extractor())
+	res = extractor()
+	print(res)
+	filter_arr = ["tournament;Indian Premier League"]
+	filter_matches = filter_matches(filter_arr, res)
+	for match in filter_matches:
+		print(get_string(match))
 	#print(parse_score("SRH 121/5 (14.1)"))
 	#print(parse_score("Kings 11 Punjab"))
