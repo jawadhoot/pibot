@@ -47,11 +47,20 @@ def get_string(match_dict):
 	str_arr.append(match_dict["tournament"] + ', ' + match_dict["tournament_match"])
 	for score in match_dict['scores']:
 		if "runs" in score:
-			str_arr.append(score['team'] + ' ' + score['runs'] + '/' + score['wickets'] + '(' + score['overs'] + ')')
+			str_arr.append(score['team'] + ' ' + score['runs'] + '/' + score['wickets'] + '(' + score['overs'] + '), RR: ' + str(run_rate(score['runs'],score['overs'])))
 		else:
 			str_arr.append(score['team'])
 	str_arr.append(match_dict['summary'])
 	return '\n'.join(str_arr)
+
+def run_rate(runs, overs):
+	balls = overs.split('.')
+	if len(balls) > 1:
+		balls_delta =  float(balls[1])  / 6
+	else:
+		balls_delta = 0
+	run_rate = float(runs)  / (float(balls[0]) + balls_delta)
+	return round(run_rate, 2)
 
 def parse_score(string):
 	print(string)
