@@ -1,4 +1,3 @@
-import asyncio
 from slixmpp import ClientXMPP
 
 class SendMsgBot(ClientXMPP):
