@@ -1,9 +1,5 @@
-"trigger":
-    "sched":
-        "start-time": "1000"
-        "frequency": "24h"
-"action-pipeline":
-    - "read-variable":
-        "name": "career-id"
-    - "http-request":
-        "url": "https://www.sebi.gov.in/sebiweb/other/careerdetail.jsp?careerId={career-id}"
+"read-variable":
+  "name": "career-id"
+  "default": 179
+"http-request":
+  "url": "https://www.sebi.gov.in/sebiweb/other/careerdetail.jsp?careerId={career-id}"
