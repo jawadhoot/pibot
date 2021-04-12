@@ -1,5 +1,3 @@
-from flask import Flask, url_for
-from markupsafe import escape
 import logging
 import json
 import os
