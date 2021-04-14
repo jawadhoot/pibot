@@ -1,3 +1,6 @@
+from logging import debug
+
+
 actions = {}
 
 def action(key):
@@ -7,7 +10,7 @@ def action(key):
     return _action
 
 @action("read-variable")
-def read_variable(params, variables):
+def read_variable(params, variables, data):
     if "name" not in params:
       return ValueError
     name = params["name"]
@@ -23,14 +26,27 @@ def read_variable(params, variables):
 
 
 @action("write-variable")
-def write_variable(params, variables):
-  variables[params.name] = params.value
+def write_variable(params, variables, data):
+  if "name" not in params:
+    return ValueError
+  if "value" not in params:
+    return ValueError
+  name = params["name"]
+  value = params["value"]
+  
+  variables[name] = value
 
 @action("http-request")
-def http_request(params, variables):
+def http_request(params, variables, data):
   if "url" not in params:
     return ValueError
   url = params["url"]
+  debug(url)
   import requests
-  a =  requests.get(url)
-  print(a)
+  res = requests.get(url)
+  return {
+    "status": res.status_code,
+    "text": res.text,
+    "headers": res.headers
+  }
+  
