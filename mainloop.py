@@ -3,12 +3,15 @@ import json
 import os
 import strictyaml
 import workflow
+from logging import info
+
+logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
 
 with open("config.json") as json_data_file:
     config = json.load(json_data_file)
-print(config)
+info(config)
 
-logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
+
 
 path = "workflows"
 workflows = []

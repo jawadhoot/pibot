@@ -33,7 +33,6 @@ def write_variable(params, variables, data):
     return ValueError
   name = params["name"]
   value = params["value"]
-  
   variables[name] = value
 
 @action("http-request")
@@ -50,3 +49,10 @@ def http_request(params, variables, data):
     "headers": res.headers
   }
   
+@action("xmpp-send")
+def xmpp_send(params, variables, data):
+  if "url" not in params:
+    return ValueError
+  url = params["url"]
+  debug(url)
+  from services import xmppservice

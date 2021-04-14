@@ -3,3 +3,5 @@
   "value": 179
 "http-request":
   "url": "https://www.sebi.gov.in/sebiweb/other/careerdetail.jsp?careerId={career-id}"
+"xmpp-send":
+  "message": "new notificaton on SEBI website id : {career-id}"

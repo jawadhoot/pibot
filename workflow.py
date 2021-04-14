@@ -1,6 +1,5 @@
 from logging import debug
 import actions
-import re
 
 class Workflow:
   def __init__(self, yaml):
@@ -12,7 +11,7 @@ class Workflow:
     for action in self.yaml:
       params = self.replace_variables(self.yaml[action])
       data.append(actions.actions[action](params, self.variables, data))
-      print(data[-1])
+      debug(data[-1])
 
   def replace_variables(self, params):
     for item in params:
