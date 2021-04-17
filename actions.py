@@ -1,6 +1,5 @@
 from logging import debug
-
-
+from services import cricbuzz
 actions = {}
 
 def action(key):
@@ -56,3 +55,11 @@ def xmpp_send(params, variables, data):
   url = params["url"]
   debug(url)
   from services import xmppservice
+
+@action("cricket-score")
+def cricket_score(params, variables, data):
+  res =cricbuzz.extractor()
+  print(res)
+  filters = params["filters"]
+  filtered_matches = cricbuzz.filter_matches(filters, res)
+  return filtered_matches
