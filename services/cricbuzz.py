@@ -74,14 +74,14 @@ def parse_score(string):
 		if grp[2]:
 			score['wickets'] = grp[2]
 		else:
-			score['wickets'] = 10
+			score['wickets'] = "10"
 	if grp[4]:
 		score['runs2'] = grp[4]
 		score['overs2'] = grp[6]
 		if grp[5]:
 			score['wickets2'] = grp[5]
 		else:
-			score['wickets2'] = 10
+			score['wickets2'] = "10"
 	return score
 
 if __name__ == "__main__":
