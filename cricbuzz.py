@@ -6,8 +6,7 @@ url = 'https://m.cricbuzz.com'
 response = get(url)
 MATCHHEADER_SPLIT = '\xa0•&nbsp'
 SCORE_SPLIT = ' '
-r_score_pattern = re.compile(r'^(\w+(?: \w+)*)(?: (\d+)\/?(\d+)? \((\d+.?\d+?)\))?$')
-
+r_score_pattern = re.compile(r'^(\w+(?: \w+)*?)(?: (\d+)(?:\/(\d+))?(?: d)?(?: \((\d+.?\d?)\))?)?(?: & (\d+)(?:\/(\d+))?(?: d)? \((\d+.?\d?)\))?$')
 
 def extractor():
 	scores = []
@@ -31,10 +30,9 @@ def extractor():
 	return scores
 
 def filter_matches(filters_array, matches):
-	a = matches
 	for filter_str in filters_array:
-		a = apply_filter(filter_str, a)
-	return a
+		matches = apply_filter(filter_str, matches)
+	return matches
 
 def apply_filter(string, matches):
 	tokens = string.split(';')
@@ -63,9 +61,11 @@ def run_rate(runs, overs):
 	return round(run_rate, 2)
 
 def parse_score(string):
+	print("score:")
 	print(string)
 	score = {}
-	grp = r_score_pattern.findall(string)[0]
+	grp = r_score_pattern.match(string).groups()
+	print(grp)
 	score['team'] = grp[0]
 	if grp[1]:
 		score['runs'] = grp[1]
@@ -74,6 +74,13 @@ def parse_score(string):
 			score['wickets'] = grp[2]
 		else:
 			score['wickets'] = 10
+	if grp[4]:
+		score['runs2'] = grp[4]
+		score['overs2'] = grp[6]
+		if grp[5]:
+			score['wickets2'] = grp[5]
+		else:
+			score['wickets2'] = 10
 	return score
 
 if __name__ == "__main__":
