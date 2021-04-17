@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from requests import get
 import re
+from logging import debug
 
 url = 'https://m.cricbuzz.com'
 response = get(url)
@@ -62,10 +63,10 @@ def run_rate(runs, overs):
 
 def parse_score(string):
 	print("score:")
-	print(string)
+	debug(string)
 	score = {}
 	grp = r_score_pattern.match(string).groups()
-	print(grp)
+	debug(grp)
 	score['team'] = grp[0]
 	if grp[1]:
 		score['runs'] = grp[1]
