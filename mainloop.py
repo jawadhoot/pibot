@@ -7,13 +7,11 @@ from logging import info
 
 logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
 
-with open("config.json") as json_data_file:
+with open("data/config.json") as json_data_file:
     config = json.load(json_data_file)
 info(config)
 
-
-
-path = "workflows"
+path = "data/workflows"
 workflows = []
 for file in os.listdir(path):
     if file.endswith(".yml"):

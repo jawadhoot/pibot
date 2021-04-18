@@ -37,7 +37,7 @@ def filter_matches(filters_array, matches):
 
 def apply_filter(string, matches):
 	tokens = string.split(';')
-	print(tokens)
+	debug(tokens)
 	if tokens[0] == "tournament":
 		return list(filter(lambda a: tokens[1] in a['tournament'], matches))
 
@@ -62,7 +62,6 @@ def run_rate(runs, overs):
 	return round(run_rate, 2)
 
 def parse_score(string):
-	print("score:")
 	debug(string)
 	score = {}
 	grp = r_score_pattern.match(string).groups()
@@ -91,5 +90,3 @@ if __name__ == "__main__":
 	filter_matches = filter_matches(filter_arr, res)
 	for match in filter_matches:
 		print(get_string(match))
-	#print(parse_score("SRH 121/5 (14.1)"))
-	#print(parse_score("Kings 11 Punjab"))
