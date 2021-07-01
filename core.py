@@ -1,11 +1,17 @@
 from logging import debug
-actions = {}
+from threading import Thread
 
+actions = {}
 def action(key):
     def _action(func):
         actions[key] = func
         return func
     return _action
+
+class Service(Thread):
+  def __init__(self, config):
+    Thread.__init__(self)
+    self.config = config
 
 @action("read-variable")
 def read_variable(params, variables, config, data):
@@ -21,7 +27,6 @@ def read_variable(params, variables, config, data):
       return variables[name]
     else:
       return default
-
 
 @action("write-variable")
 def write_variable(params, variables, config, data):

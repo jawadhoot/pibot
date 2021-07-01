@@ -13,10 +13,10 @@ r_score_pattern = re.compile(r'^(\w+(?: \w+)*?)(?: (\d+)(?:\/(\d+))?(?: d)?(?: \
 
 @action("cricket-score")
 def cricket_score(params, variables, config, data):
-  res =cricbuzz.extractor()
+  res = extractor()
   print(res)
   filters = params["filters"]
-  filtered_matches = cricbuzz.filter_matches(filters, res)
+  filtered_matches = filter_matches(filters, res)
   variables["status"] = "ok"
   return filtered_matches
 
