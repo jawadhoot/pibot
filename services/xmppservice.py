@@ -3,7 +3,6 @@ from slixmpp import ClientXMPP
 class SendMsgBot(ClientXMPP):
   def __init__(self, jid, password, recipient, message):
     ClientXMPP.__init__(self, jid, password)
-
     self.recipient = recipient
     self.msg = message
     self.add_event_handler("session_start", self.start)
