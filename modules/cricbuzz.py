@@ -2,12 +2,24 @@ from bs4 import BeautifulSoup
 from requests import get
 import re
 from logging import debug
+from core import action
 
 url = 'https://m.cricbuzz.com'
 response = get(url)
 MATCHHEADER_SPLIT = '\xa0•&nbsp'
 SCORE_SPLIT = ' '
 r_score_pattern = re.compile(r'^(\w+(?: \w+)*?)(?: (\d+)(?:\/(\d+))?(?: d)?(?: \((\d+.?\d?)\))?)?(?: & (\d+)(?:\/(\d+))?(?: d)? \((\d+.?\d?)\))?$')
+
+
+@action("cricket-score")
+def cricket_score(params, variables, config, data):
+  res =cricbuzz.extractor()
+  print(res)
+  filters = params["filters"]
+  filtered_matches = cricbuzz.filter_matches(filters, res)
+  variables["status"] = "ok"
+  return filtered_matches
+
 
 def extractor():
 	scores = []

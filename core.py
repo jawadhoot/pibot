@@ -1,5 +1,4 @@
 from logging import debug
-from services import cricbuzz
 actions = {}
 
 def action(key):
@@ -50,21 +49,3 @@ def http_request(params, variables, config, data):
     "headers": res.headers
   }
   
-@action("xmpp-send")
-def xmpp_send(params, variables, config, data):
-  if "message" not in params:
-    return ValueError
-  message = params["message"]
-  debug(message)
-  from services import xmppservice
-  xmppservice.SendMsgBot(config["xmpp"]["sender-jid"], config["xmpp"]["sender-pass"], config["xmpp"]["recipient-jid"], message)
-  variables["status"] = "ok"
-
-@action("cricket-score")
-def cricket_score(params, variables, config, data):
-  res =cricbuzz.extractor()
-  print(res)
-  filters = params["filters"]
-  filtered_matches = cricbuzz.filter_matches(filters, res)
-  variables["status"] = "ok"
-  return filtered_matches
