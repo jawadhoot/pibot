@@ -1,38 +1,36 @@
+import asyncio
 import logging
+from logging import info, debug
 import json
 import os
 import strictyaml
 import workflow
-from logging import info, debug
-import asyncio
 from sys import platform
+from time import sleep
+import importlib
+
+import core
 
 logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
+config_path = "data/config.json"
+workflows_path = "data/workflows"
 
 debug(platform)
+with open(config_path) as json_data_file:
+    core.config = json.load(json_data_file)
+
 if platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
-with open("data/config.json") as json_data_file:
-    config = json.load(json_data_file)
-
-debug(config)
-
-info("loading services")
-from modules import xmppservice
-info("services loaded")
+  
+info("loading modules")
+importlib.import_module("modules.xmppservice")
+info("modules loaded")
 
 info("loading workflows")
-path = "data/workflows"
-workflows = []
-for file in os.listdir(path):
-    if file.endswith(".yml"):
-        file_path = f"{path}/{file}"
+for filename in os.listdir(workflows_path):
+    if filename.endswith(".yml"):
+        file_path = f"{workflows_path}/{filename}"
         with open(file_path, 'r') as f:
-            workflows.append(strictyaml.load(f.read()).data)
+            wf = strictyaml.load(f.read()).data
+            core.workflows[filename] = workflow.Workflow( wf , core.config) 
 info("workflows loaded")
-
-for wf in workflows:
-    w = workflow.Workflow(wf, config)
-    w.execute()
-
