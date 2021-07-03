@@ -1,13 +1,12 @@
 import asyncio
+import importlib
+import json
 import logging
 from logging import info, debug
-import json
 import os
 import strictyaml
-import workflow
 from sys import platform
 from time import sleep
-import importlib
 
 import core
 
@@ -32,5 +31,5 @@ for filename in os.listdir(workflows_path):
         file_path = f"{workflows_path}/{filename}"
         with open(file_path, 'r') as f:
             wf = strictyaml.load(f.read()).data
-            core.workflows[filename] = workflow.Workflow( wf , core.config) 
+            core.workflows[filename] = core.Workflow( wf , core.config) 
 info("workflows loaded")
