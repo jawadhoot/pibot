@@ -1,11 +1,9 @@
-from asyncio.events import new_event_loop
 from slixmpp import ClientXMPP
-from core import action, service
-from core import services
 from time import sleep
 from threading import Thread
-import asyncio
-from sys import platform
+
+from core import action, service
+from core import services
 
 class XMPPService(Thread):
   def __init__(self, jid, password, recipient):
@@ -16,15 +14,12 @@ class XMPPService(Thread):
     self.client = ClientXMPP(jid, password)
     self.client.register_plugin('xep_0030') # Service Discovery
     self.client.register_plugin('xep_0199') # XMPP Ping
-
     self.client.add_event_handler('session_start', self.session_start)
     self.client.add_event_handler("message", self.message)
+    self.client.connect()
  
   def send_message(self, message):
-    print(message)
-    print(self.client.get_roster())
-    print(self.client.send_message(mto=self.recipient, mbody="msg", mtype='chat'))
-    print("message sent")
+    self.client.send_message(mto=self.recipient, mbody=message, mtype='chat')
 
   async def session_start(self, event):
     self.client.send_presence()
@@ -52,11 +47,9 @@ def xmpp_send(params, variables, config, data):
 def xmpp_start(config):
   config = config["xmpp"]
   t = XMPPService(config["sender-jid"],config["sender-pass"],config["recipient-jid"])
-  t.client.connect()
   t.daemon = True
   t.start()
   while not t.connected:
     sleep(1)
   print("XMPPService started")
   return t
-  
