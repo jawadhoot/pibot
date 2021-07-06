@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from requests import get
 import re
 from logging import debug
+
 from core import action
 
 url = 'https://m.cricbuzz.com'
@@ -10,17 +11,18 @@ MATCHHEADER_SPLIT = '\xa0•&nbsp'
 SCORE_SPLIT = ' '
 r_score_pattern = re.compile(r'^(\w+(?: \w+)*?)(?: (\d+)(?:\/(\d+))?(?: d)?(?: \((\d+.?\d?)\))?)?(?: & (\d+)(?:\/(\d+))?(?: d)? \((\d+.?\d?)\))?$')
 
-
 @action("cricket-score")
 def cricket_score(params, variables, config, data):
   res = extractor()
-  print(res)
-  filters = params["filters"]
-  filtered_matches = filter_matches(filters, res)
+  debug(res)
+  if "filters" in params:
+	  filters = params["filters"]
+  else:
+	  filters={}
+  variables["score"] = filter_matches(filters, res)
   variables["status"] = "ok"
-  return filtered_matches
-
-
+  return "ok"
+  
 def extractor():
 	scores = []
 	html_soup = BeautifulSoup(response.text, 'html.parser')
