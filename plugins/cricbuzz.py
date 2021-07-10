@@ -9,7 +9,7 @@ url = 'https://m.cricbuzz.com'
 response = get(url)
 MATCHHEADER_SPLIT = '\xa0•&nbsp'
 SCORE_SPLIT = ' '
-r_score_pattern = re.compile(r'^(\w+(?: \w+)*?)(?: (\d+)(?:\/(\d+))?(?: d)?(?: \((\d+.?\d?)\))?)?(?: & (\d+)(?:\/(\d+))?(?: d)? \((\d+.?\d?)\))?$')
+r_score_pattern = re.compile(r'^(\w+(?: \w+)*?)(?: (\d+)(?:\/(\d+))?(?: d)?(?: d?\((\d+.?\d?)\))?)?(?: & (\d+)(?:\/(\d+))?(?: d)? d?\((\d+.?\d?)\))?$')
 
 @action("cricket-score")
 def cricket_score(params, variables):
@@ -57,20 +57,24 @@ def apply_filter(string, matches):
 	if tokens[0] == "team":
 		return list(filter(lambda a: tokens[1] in a['teams'], matches))
 	if tokens[0] == "limit":
-		return list[:int(tokens[1])]
+		return matches[:int(tokens[1])]
 
 def get_string(match_dict):
 	str_arr = []
 	str_arr.append(match_dict["tournament"] + ', ' + match_dict["tournament_match"])
 	for score in match_dict['scores']:
 		if "runs" in score:
-			str_arr.append(score['team'] + ' ' + score['runs'] + '/' + score['wickets'] + '(' + score['overs'] + '), RR: ' + str(run_rate(score['runs'],score['overs'])))
+			str_arr.append(score['team'] + ' ' + score['runs'] + '/' + score['wickets'] + ' (' + score['overs'] + '), RR: ' + str(run_rate(score['runs'],score['overs'])))
+		if "runs2" in score:
+			str_arr.append(score['team'] + ' ' + score['runs2'] + '/' + score['wickets2'] + ' (' + score['overs2'] + '), RR: ' + str(run_rate(score['runs2'],score['overs2'])))
 		else:
 			str_arr.append(score['team'])
 	str_arr.append(match_dict['summary'])
 	return '\n'.join(str_arr)
 
 def run_rate(runs, overs):
+	if overs == "NA":
+		return 0
 	balls = overs.split('.')
 	if len(balls) > 1:
 		balls_delta =  float(balls[1])  / 6
@@ -87,24 +91,23 @@ def parse_score(string):
 	score['team'] = grp[0]
 	if grp[1]:
 		score['runs'] = grp[1]
-		score['overs'] = grp[3]
+		if grp[3]:
+			score['overs'] = grp[3]
+		else:
+			score['overs'] = "NA"
 		if grp[2]:
 			score['wickets'] = grp[2]
 		else:
 			score['wickets'] = "10"
 	if grp[4]:
 		score['runs2'] = grp[4]
-		score['overs2'] = grp[6]
+		if grp[6]:
+			score['overs2'] = grp[6]
+		else:
+			score['overs2'] = "NA"
 		if grp[5]:
 			score['wickets2'] = grp[5]
 		else:
 			score['wickets2'] = "10"
 	return score
 
-if __name__ == "__main__":
-	res = extractor()
-	print(res)
-	filter_arr = ["tournament;Indian Premier League"]
-	filter_matches = filter_matches(filter_arr, res)
-	for match in filter_matches:
-		print(get_string(match))
