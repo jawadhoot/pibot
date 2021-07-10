@@ -4,7 +4,7 @@ from slixmpp import ClientXMPP
 from time import sleep
 from threading import Thread
 
-from core import action, eventfilter, service
+from core import action, service, triggerfliter
 from core import services
 
 class XMPPService(Thread):
@@ -51,7 +51,7 @@ def xmpp_send(params, variables):
   services["xmpp-service"].send_message(message)
   variables["status"] = "ok"
 
-@eventfilter("xmpp-call")
+@triggerfliter("xmpp-call")
 def xmpp_filter(calltext, params):
   if calltext == params["calltext"]:
     return True

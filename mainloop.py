@@ -58,19 +58,19 @@ info("triggers loaded")
 info("available actions")
 info(core.actions.keys())
 info("available eventfilters")
-info(core.eventfilters.keys())
+info(core.triggerfliters.keys())
 info("available services")
 info(core.services.keys())
 info("available workflows")
 info(core.workflows.keys())
 
-info("available triggers")
-info(core.triggers)
+#info("available triggers")
+#info(core.triggers)
 
 def process_event(e):
   filtered_triggers = filter(lambda c: c["trigger"] == e[0], core.triggers)
   for trigger in filtered_triggers:
-    if core.eventfilters[e[0]](e[1], trigger["params"]):
+    if core.triggerfliters[e[0]](e[1], trigger["params"]):
       core.start_workflow(trigger['workflow'])
       info(trigger['workflow'] + "started")
   info("(" + e[0] + "," +e[1] + ") processed ")

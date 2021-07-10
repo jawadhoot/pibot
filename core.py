@@ -3,7 +3,7 @@ from logging import debug,warn
 config = {}
 
 actions = {}
-eventfilters = {}
+triggerfliters = {}
 services = {}
 workflows = {}
 
@@ -20,14 +20,14 @@ def action(key):
     return func
   return _action
 
-def eventfilter(key):
-  def _eventfilter(func):
-    if key in eventfilters:
+def triggerfliter(key):
+  def _triggerfliter(func):
+    if key in triggerfliters:
       warn(key + " duplicate eventfilter name, not loading")
     else:
-      eventfilters[key] = func
+      triggerfliters[key] = func
     return func
-  return _eventfilter
+  return _triggerfliter
 
 def service(key):
   def _service(func):
