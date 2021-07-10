@@ -5,8 +5,8 @@ config = {}
 actions = {}
 eventfilters = {}
 services = {}
-
 workflows = {}
+
 triggers = []
 
 event_queue = None
@@ -38,6 +38,27 @@ def service(key):
     except Exception:
       print(Exception)
   return _service
+
+def validate_workflow(wf):
+  return True
+
+def add_workflow(name, wf):
+  debug(name)
+  debug(wf)
+  if validate_workflow(wf):
+    workflows[name] = wf
+
+def validate_trigger(tr):
+  return True
+
+def add_trigger(tr):
+  debug(tr)
+  if validate_trigger(tr):
+    triggers.append(tr)
+
+def start_workflow(name):
+  wf = workflows[name]
+  Workflow(wf,config).execute()
 
 class Workflow:
   def __init__(self, yaml, config):

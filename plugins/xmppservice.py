@@ -35,7 +35,7 @@ class XMPPService(Thread):
 
   def message(self, msg):
     if msg['type'] in ('chat', 'normal'):
-      self.q.put(("xmpp-service",msg["body"]))
+      self.q.put(("xmpp-call",msg["body"]))
  
   def run(self):
     while True:
@@ -50,11 +50,11 @@ def xmpp_send(params, variables, config, data):
   services["xmpp-service"].send_message(message)
   variables["status"] = "ok"
 
-@eventfilter("xmpp-service")
-def xmpp_filter(event, triggers):
-  for trigger in triggers:
-    if event[1] == trigger["callword"]:
-      return trigger
+@eventfilter("xmpp-call")
+def xmpp_filter(calltext, params):
+  if calltext == params["calltext"]:
+    return True
+  return False
 
 @service("xmpp-service")
 def xmpp_start(config, event_queue):
