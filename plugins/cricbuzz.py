@@ -18,9 +18,11 @@ def cricket_score(params, variables):
   if "filters" in params:
 	  filters = params["filters"]
   else:
-	  filters={}
-  variables["score"] = filter_matches(filters, res)
-  variables["status"] = "ok"
+	  filters={"limit;3"}
+  textarr =[]
+  for match in filter_matches(filters, res):
+  	textarr.append(get_string(match))
+  variables["score"] = "\n\n".join(textarr)
   return "ok"
   
 def extractor():
