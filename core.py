@@ -71,9 +71,9 @@ class Workflow:
     for action in self.yaml:
       print(self.yaml)
       params = self.replace_variables(self.yaml[action])
-      result = actions[action](params, self.variables, self.config, data)
-      data.append(result)
-      #debug(data[-1])
+      status = actions[action](params, self.variables)
+      if status == "ko":
+        break
 
   def replace_variables(self, params):
     print(params)

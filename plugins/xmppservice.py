@@ -1,3 +1,4 @@
+from asyncio.events import new_event_loop
 from logging import info
 from slixmpp import ClientXMPP
 from time import sleep
@@ -16,6 +17,7 @@ class XMPPService(Thread):
 
     self.client = ClientXMPP(jid, password)
     self.client.register_plugin('xep_0030')
+    self.client.register_plugin('xep_0060') # PubSub
     self.client.register_plugin('xep_0199')
     self.client.add_event_handler('session_start', self.session_start)
     self.client.add_event_handler("message", self.message)
@@ -38,12 +40,11 @@ class XMPPService(Thread):
       self.q.put(("xmpp-call",msg["body"]))
  
   def run(self):
-    while True:
-      self.client.process()
-      sleep(1)
-  
+    self.client.process(forever=True)
+    # TODO - find a way to keep connection alive
+
 @action("xmpp-send")
-def xmpp_send(params, variables, config, data):
+def xmpp_send(params, variables):
   if "message" not in params:
     return ValueError 
   message = params["message"]

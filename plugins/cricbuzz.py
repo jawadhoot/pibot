@@ -12,7 +12,7 @@ SCORE_SPLIT = ' '
 r_score_pattern = re.compile(r'^(\w+(?: \w+)*?)(?: (\d+)(?:\/(\d+))?(?: d)?(?: \((\d+.?\d?)\))?)?(?: & (\d+)(?:\/(\d+))?(?: d)? \((\d+.?\d?)\))?$')
 
 @action("cricket-score")
-def cricket_score(params, variables, config, data):
+def cricket_score(params, variables):
   res = extractor()
   debug(res)
   if "filters" in params:
@@ -54,6 +54,10 @@ def apply_filter(string, matches):
 	debug(tokens)
 	if tokens[0] == "tournament":
 		return list(filter(lambda a: tokens[1] in a['tournament'], matches))
+	if tokens[0] == "team":
+		return list(filter(lambda a: tokens[1] in a['teams'], matches))
+	if tokens[0] == "limit":
+		return list[:int(tokens[1])]
 
 def get_string(match_dict):
 	str_arr = []

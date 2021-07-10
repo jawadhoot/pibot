@@ -2,7 +2,7 @@ from logging import debug
 from core import action
 
 @action("read-variable")
-def read_variable(params, variables, config, data):
+def read_variable(params, variables):
     if "name" not in params:
       return ValueError
     name = params["name"]
@@ -17,7 +17,7 @@ def read_variable(params, variables, config, data):
       return default
 
 @action("write-variable")
-def write_variable(params, variables, config, data):
+def write_variable(params, variables):
   if "name" not in params:
     return ValueError
   if "value" not in params:
@@ -28,7 +28,7 @@ def write_variable(params, variables, config, data):
   variables["status"] = "ok"
 
 @action("http-request")
-def http_request(params, variables, config, data):
+def http_request(params, variables):
   if "url" not in params:
     return ValueError
   url = params["url"]
