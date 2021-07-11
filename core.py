@@ -56,14 +56,14 @@ def add_trigger(tr):
   if validate_trigger(tr):
     triggers.append(tr)
 
-def start_workflow(name):
+def start_workflow(name, params):
   wf = workflows[name]
-  Workflow(wf,config).execute()
+  Workflow(wf,config, params).execute()
 
 class Workflow:
-  def __init__(self, yaml, config):
+  def __init__(self, yaml, config, variables):
     self.yaml = yaml
-    self.variables = {}
+    self.variables = variables
     self.config = config
 
   def execute(self):
