@@ -1,13 +1,13 @@
-from logging import debug,warn
+from logging import debug,warn,error,info
 
 config = {}
 
-actions = {}
-triggerfliters = {}
 services = {}
-workflows = {}
+actions = {}
+eventfilters = {}
 
-triggers = []
+workflows = {}
+triggers = {}
 
 event_queue = None
 
@@ -20,23 +20,23 @@ def action(key):
     return func
   return _action
 
-def triggerfliter(key):
-  def _triggerfliter(func):
-    if key in triggerfliters:
-      warn(key + " duplicate eventfilter name, not loading")
+def eventfilter(key):
+  def _eventfilter(func):
+    if key in eventfilters:
+      warn(key + " duplicate trigger name, not loading")
     else:
-      triggerfliters[key] = func
+      eventfilters[key] = func
     return func
-  return _triggerfliter
+  return _eventfilter
 
 def service(key):
   def _service(func):
     if key in services:
-      warn(key + "duplicate service name, not loading")
+      warn(key + " duplicate service name, not loading")
     try:
-      services[key] = func(config,event_queue)
-    except Exception:
-      print(Exception)
+      services[key] = func(config[key],event_queue)
+    except Exception as e:
+      error(e, exc_info=True)
   return _service
 
 def validate_workflow(wf):
@@ -45,41 +45,44 @@ def validate_workflow(wf):
 def add_workflow(name, wf):
   debug(name)
   debug(wf)
+  if name in workflows:
+      warn(name + " duplicate workflow name, not loading")
   if validate_workflow(wf):
     workflows[name] = wf
 
 def validate_trigger(tr):
   return True
 
-def add_trigger(tr):
+def add_trigger(name, tr):
+  debug(name)
   debug(tr)
   if validate_trigger(tr):
-    triggers.append(tr)
+    triggers[name] = tr
 
-def start_workflow(name, params):
+def start_workflow(name):
   wf = workflows[name]
-  Workflow(wf,config, params).execute()
+  Workflow(wf,config).execute()
 
 class Workflow:
-  def __init__(self, yaml, config, variables):
+  def __init__(self, yaml, config):
     self.yaml = yaml
-    self.variables = variables
+    self.variables = {}
     self.config = config
 
   def execute(self):
     data = []
     for action in self.yaml:
-      print(self.yaml)
+      debug(self.yaml)
       params = self.replace_variables(self.yaml[action])
       status = actions[action](params, self.variables)
       if status == "ko":
         break
 
   def replace_variables(self, params):
-    print(params)
     for item in params:
       try:
         params[item] = params[item].format_map(self.variables)
       except KeyError:
-        debug(params[item])
+        warn(self.variables)
+        warn(params[item])
     return params

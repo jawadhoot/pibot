@@ -1,9 +1,7 @@
 import asyncio
-from asyncio import events
-from flask import Flask
 from  importlib import import_module
 import json
-from logging import basicConfig, INFO, info, DEBUG, debug
+from logging import basicConfig, INFO, info, DEBUG, debug, error
 from os import listdir
 import strictyaml
 from sys import platform
@@ -28,9 +26,11 @@ if platform == "win32":
 core.event_queue = SimpleQueue()
 
 info("loading plugins")
+
 import_module("plugins.basic")
 import_module("plugins.cricbuzz")
 import_module("plugins.xmppservice")
+
 info("plugins loaded")
 
 def remove_ext(filename):
@@ -44,7 +44,6 @@ for filename in listdir(workflows_path):
       wf = strictyaml.load(f.read()).data
       name = remove_ext(filename)
       core.add_workflow(name, wf)
-info("workflows loaded")
 
 info("loading triggers")
 for filename in listdir(triggers_path):
@@ -52,28 +51,30 @@ for filename in listdir(triggers_path):
     file_path = f"{triggers_path}/{filename}"
     with open(file_path, 'r') as f:
       tr = strictyaml.load(f.read()).data
-      core.add_trigger(tr)
+      name = remove_ext(filename)
+      core.add_trigger(name, tr)
 info("triggers loaded")
 
 info("available actions")
 info(core.actions.keys())
 info("available eventfilters")
-info(core.triggerfliters.keys())
+info(core.eventfilters.keys())
 info("available services")
 info(core.services.keys())
+
 info("available workflows")
 info(core.workflows.keys())
-
-#info("available triggers")
-#info(core.triggers)
+info("available triggers")
+info(core.triggers.keys())
 
 def process_event(e):
-  filtered_triggers = filter(lambda c: c["trigger"] == e[0], core.triggers)
+  info(e)
+  filtered_triggers = filter(lambda c: c["trigger"] == e[0], core.triggers.values())
   for trigger in filtered_triggers:
-    if core.triggerfliters[e[0]](e[1], trigger["params"]):
-      core.start_workflow(trigger['workflow'], trigger["params"])
-      info(trigger['workflow'] + "started")
-  info("(" + e[0] + "," +e[1] + ") processed ")
+    if core.eventfilters[e[0]](e[1], trigger["params"]):
+      core.start_workflow(trigger['workflow'])
+      info(trigger['workflow'] + " started")
+  info("(" + e[0] + "," + e[1] + ") processed ")
 
 while True:
   try:
@@ -85,9 +86,3 @@ while True:
   except KeyboardInterrupt:
     break
   sleep(1)
-
-# app = Flask("pibot")
-# @app.route('/')
-# def index():
-#   return "pibot"
-# app.run(port=8080)
