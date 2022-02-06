@@ -1,0 +1,4 @@
+trigger: xmpp-call
+params:
+  calltext: score
+workflow: cricket-score

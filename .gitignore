@@ -2,8 +2,8 @@
 __pycache__/
 
 # Project
-data/
 config.json
+data/files
 
 # ide config
 venv/
