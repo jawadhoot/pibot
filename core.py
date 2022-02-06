@@ -34,7 +34,7 @@ def service(key):
     if key in services:
       warn(key + " duplicate service name, not loading")
     try:
-      services[key] = func(config[key],event_queue)
+      services[key] = func(config[key])
     except Exception as e:
       error(e, exc_info=True)
   return _service
@@ -62,6 +62,9 @@ def add_trigger(name, tr):
 def start_workflow(name):
   wf = workflows[name]
   Workflow(wf,config).execute()
+
+def put_event(ev):
+  event_queue.put(ev)
 
 class Workflow:
   def __init__(self, yaml, config):

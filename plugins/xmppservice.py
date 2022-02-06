@@ -6,14 +6,14 @@ from threading import Thread
 
 from core import action, service, eventfilter
 from core import services
+from core import put_event
 
 class XMPPService(Thread):
-  def __init__(self, event_queue, jid, password, recipient):
+  def __init__(self, jid, password, recipient):
     super().__init__()
     self.connected = False
     self.failure = False
     self.recipient = recipient
-    self.q = event_queue
 
     self.client = ClientXMPP(jid, password)
     self.client.register_plugin('xep_0030')
@@ -37,30 +37,16 @@ class XMPPService(Thread):
 
   def message(self, msg):
     if msg['type'] in ('chat', 'normal'):
-      self.q.put(("xmpp-call",msg["body"]))
+      put_event(("xmpp-call",msg["body"]))
  
   def run(self):
     self.client.process(forever=True)
     # TODO - find a way to keep connection alive
 
-@action("xmpp-send")
-def xmpp_send(params, variables):
-  if "message" not in params:
-    return ValueError 
-  message = params["message"]
-  services["xmpp-service"].send_message(message)
-  variables["status"] = "ok"
-
-@eventfilter("xmpp-call")
-def xmpp_filter(calltext, params):
-  if calltext == params["calltext"]:
-    return True
-  return False
-
 @service("xmpp-service")
-def xmpp_start(config, event_queue):
+def xmpp_start(config):
   info("starting XMPPService")
-  t = XMPPService(event_queue, config["sender-jid"],config["sender-pass"],config["recipient-jid"])
+  t = XMPPService(config["sender-jid"],config["sender-pass"],config["recipient-jid"])
   t.daemon = True
   t.start()
   timeout = 10
@@ -71,3 +57,17 @@ def xmpp_start(config, event_queue):
     raise Exception("Connection failed or Timedout")
   info("XMPPService started")
   return t
+
+@action("xmpp-send")
+def xmpp_send(params, variables):
+  if "message" not in params:
+    return ValueError 
+  message = params["message"]
+  services["xmpp-service"].send_message(message)
+  variables["status"] = "ok"
+
+@eventfilter("xmpp-call")
+def xmpp_filter(args_list, params):
+  if args_list[0] == params["calltext"]:
+    return True
+  return False

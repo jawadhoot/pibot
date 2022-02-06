@@ -71,10 +71,10 @@ def process_event(e):
   info(e)
   filtered_triggers = filter(lambda c: c["trigger"] == e[0], core.triggers.values())
   for trigger in filtered_triggers:
-    if core.eventfilters[e[0]](e[1], trigger["params"]):
+    if core.eventfilters[e[0]](e[1:], trigger["params"]):
       core.start_workflow(trigger['workflow'])
       info(trigger['workflow'] + " started")
-  info("(" + e[0] + "," + e[1] + ") processed ")
+  info("(" + e[0] + ") processed ")
 
 while True:
   try:
